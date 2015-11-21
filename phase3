@@ -1,0 +1,119 @@
+from tkinter import *
+#import PyMySQL
+
+class FancyHotels:
+    
+    def __init__(self, win):
+        self.Login(win)
+
+    def Login(self, win):
+        self.root = win
+        self.root.title("Login")
+        
+        Label(self.root, text="Username").grid(row=1, column=0)
+        Entry(self.root).grid(row=1, column=1, columnspan=3)
+        
+        Label(self.root, text="Password").grid(row=2, column=0)
+        Entry(self.root).grid(row=2, column=1, columnspan=3)
+        
+        Button(self.root, text="Login", command=self.UserView).grid(row=3,
+                                                                 columnspan=4)
+
+        Label(self.root, text=" ").grid(row=4, column=0, rowspan=2)
+        
+        Button(self.root, text="Create New User Account",
+               command=self.CreateAccount).grid(row=7, columnspan=4)
+
+##    #connects to network
+##    def Connect(self):
+##        try:
+##            self.db=pymysql.connect(host="academic-mysql.cc.gatech.edu",
+##                                    db="cs4400_Group_16", user="cs4400_Group_16",
+##                                    passwd="cq35Y7W9")
+##            return self.db
+##            
+##        except:
+##            messagebox.showinfo("Error!", "Check your internet connection")
+
+    def CheckLogin(self):
+        # connect to database and check username/pw
+        # if user username/pw match -> self.UserView()
+        # if mgr username/pw match -> self.MgrView()
+        # no match -> self.Login()
+        pass
+  
+    def UserView(self):
+        # connect to database and check username/pw 
+        self.root.destroy()
+        self.userview = Tk()
+        self.userview.title("Choose Functionality")
+        
+        Label(self.userview, text="Welcome Malvika").grid(row=0,sticky=W)
+        Label(self.userview, text=" ").grid(row=1)
+        
+        Button(self.userview, text="Make a New Reservation", command=self.RoomSearch).grid(row=2)
+        Button(self.userview, text="Update Your Reservation").grid(row=3)
+        Button(self.userview, text="Cancel a Reservation").grid(row=4)
+        Button(self.userview, text="Provide feedback").grid(row=5)
+        Button(self.userview, text="View feedback").grid(row=6)
+
+    def MgrView(self):
+        # connect to database and check mgr username/pw
+        self.root.destroy()
+        self.mgrview = Tk()
+        self.mgrview.title("Choose Functionality")
+
+        Label(self.mgrview, text="Welcome Malvika").grid(row=0,sticky=W)
+        Label(self.mgrview, text=" ").grid(row=1)
+        
+        Button(self.mgrview, text="View Reservation Reports").grid(row=2)
+        Button(self.mgrview, text="View Popular Room Category Reports").grid(row=3)
+        Button(self.mgrview, text="View Revenue Reports").grid(row=4)
+
+        
+    def CreateAccount(self):
+        
+        self.createacct = Tk()
+        self.createacct.title("New User Registration")
+
+        Label(self.createacct, text=" ").grid(row=0, rowspan=2)
+
+        Label(self.createacct, text="Username").grid(row=2, sticky=E)
+        Entry(self.createacct).grid(row=2, column=1)
+
+        Label(self.createacct, text="Password").grid(row=3, sticky=E)
+        Entry(self.createacct).grid(row=3, column=1)
+
+        Label(self.createacct, text="Confirm Password").grid(row=4, sticky=E)
+        Entry(self.createacct).grid(row=4, column=1)
+
+        Label(self.createacct, text="Email").grid(row=5, sticky=E)
+        Entry(self.createacct).grid(row=5, column=1)
+
+        Label(self.createacct, text=" ").grid(row=6, rowspan=2)
+
+        Button(self.createacct, text="Submit",
+               command=self.Return2Login).grid(row=8, columnspan=2)
+
+    def Return2Login(self):
+        # enter SQL to insert to user account info
+        self.createacct.destroy()
+        self.Login()
+
+    def RoomSearch(self):
+        self.rmsrch = Tk()
+        self.rmsrch.title("Search Rooms")
+
+        RSvar = StringVar(self.rmsrch)
+        RSvar.set("Atlanta")
+
+        Label(self.rmsrch, text="Location").grid(row=0, column=0)
+        option = OptionMenu(self.rmsrch, RSvar, "Atlanta", "Charlotte",
+                            "Savannah", "Orlando", "Miami")
+        option.grid(row=0, column=1)
+
+        
+      
+root = Tk()
+prog = FancyHotels(root)
+root.mainloop()
