@@ -115,8 +115,12 @@ class FancyHotels:
     def Return2Login(self): # helper function to take users back to login screen
     
         # enter SQL statement here to insert to user account info
+
+        try:
+            self.createacct.destroy() # removes create account window
+        except:
+            pass
         
-        self.createacct.destroy() # removes create account window
         self.Login(self.root) # recalls the login window
 
     def RoomSearch(self):
@@ -126,8 +130,8 @@ class FancyHotels:
         self.rmsrch = Tk()
         self.rmsrch.title("Search Rooms")
 
-        RSvar = StringVar(self.rmsrch) # RSvar is local to this function, self.RSvar makes it global
-        RSvar.set("Atlanta") # automatically sets the RSvar equal to Atlanta for reference in other functions
+        RSvar = StringVar(self.rmsrch)
+        RSvar.set("Atlanta")
 
         Label(self.rmsrch, text="Location").grid(row=0, column=0, sticky=W)
         option = OptionMenu(self.rmsrch, RSvar, "Atlanta", "Charlotte",
@@ -141,7 +145,61 @@ class FancyHotels:
         Entry(self.rmsrch).grid(row=1, column=3)
 
         Button(self.rmsrch, text="Search",
-               command=self.UserView).grid(row=3, column=3, sticky=E)
+               command=self.paymentInfo).grid(row=3, column=3, sticky=E)
+
+    def reserveRoom(self):
+        pass
+
+    def confirmation(self):
+
+        self.conf = Tk()
+        self.conf.title("Confirmation Screen")
+
+        Label(self.conf, text="Your Reservation ID").grid(row=1, column=0)
+        ce = Entry(self.conf).grid(row=2, column=1)
+
+    
+    def paymentInfo(self):
+
+        self.pay=Tk()
+        self.pay.title("Payment Information")
+
+        Label(self.pay, text="Add Card").grid(row=0, columnspan = 2)
+
+        Label(self.pay, text="Name on Card").grid(row=1, column = 0)
+        Entry(self.pay).grid(row=1, column=1)
+
+        Label(self.pay, text="Card Number").grid(row=2, column = 0)
+        Entry(self.pay).grid(row=2, column=1)
+
+        Label(self.pay, text="Expiration Date").grid(row=3, column = 0)
+        Entry(self.pay).grid(row=3, column=1)
+
+        Label(self.pay, text="CVV").grid(row=4, column = 0)
+        Entry(self.pay).grid(row=4, column=1)
+
+        Button(self.pay, text= "Save",
+               command=self.saveCard).grid(row=6, columnspan=2)
+
+        Label(self.pay, text = "Delete Card").grid(row=0, column = 3,
+                                                   columnspan=2, padx=1)
+        Label(self.pay, text="Card Number").grid(row=1, column = 3, padx=20)
+        cardVar = StringVar(self.pay)
+        cardVar.set("8219")
+        card = OptionMenu(self.pay, cardVar, "Atlanta", "Charlotte",
+                            "Savannah", "Orlando", "Miami")
+        card.grid(row=1, column=4)
+
+        Button(self.pay, text= "Delete",
+               command=self.deleteCard).grid(row=6, column= 3, columnspan=2, padx=1)
+       
+    def saveCard(self):
+        messagebox.showinfo("card saved", message="saved!")
+        self.pay.destroy()
+
+    def deleteCard(self):
+        messagebox.showinfo("card deleted", message="deleted!")
+        self.pay.destroy()
         
       
 root = Tk() # creates the first window
