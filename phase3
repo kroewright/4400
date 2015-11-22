@@ -4,10 +4,16 @@ from tkinter import *
 class FancyHotels:
     
     def __init__(self, win):
-        self.Login(win)
+        self.Login(win) # pulls up the login window
 
     def Login(self, win):
-        self.root = win
+        try:
+            self.root.deiconify()   # redraws login screen after creating account
+                                    # or trying to login again
+        except:
+            pass
+        
+        self.root = win # idk what this is, just the convention i learned in CS 2316
         self.root.title("Login")
         
         Label(self.root, text="Username").grid(row=1, column=0)
@@ -24,27 +30,31 @@ class FancyHotels:
         Button(self.root, text="Create New User Account",
                command=self.CreateAccount).grid(row=7, columnspan=4)
 
-##    #connects to network
-##    def Connect(self):
-##        try:
-##            self.db=pymysql.connect(host="academic-mysql.cc.gatech.edu",
-##                                    db="cs4400_Group_16", user="cs4400_Group_16",
-##                                    passwd="cq35Y7W9")
-##            return self.db
-##            
-##        except:
-##            messagebox.showinfo("Error!", "Check your internet connection")
+    #connects to network
+    def Connect(self): # connects to database network
+        try: # need to check this
+            self.db=pymysql.connect(host="academic-mysql.cc.gatech.edu",
+                                    db="cs4400_Group_16", user="cs4400_Group_16",
+                                    passwd="cq35Y7W9")
+            return self.db
+            
+        except: # bad internet connection, the login should be correct though
+            messagebox.showinfo("Error!", "Check your internet connection")
 
     def CheckLogin(self):
         # connect to database and check username/pw
+        
         # if user username/pw match -> self.UserView()
+        
         # if mgr username/pw match -> self.MgrView()
-        # no match -> self.Login()
+        
+        # no match -> self.Login(self.root)
         pass
   
-    def UserView(self):
-        # connect to database and check username/pw 
-        self.root.destroy()
+    def UserView(self): # connect to database and check username/pw
+
+        self.root.withdraw() # closes the login window
+        
         self.userview = Tk()
         self.userview.title("Choose Functionality")
         
@@ -57,9 +67,10 @@ class FancyHotels:
         Button(self.userview, text="Provide feedback").grid(row=5)
         Button(self.userview, text="View feedback").grid(row=6)
 
-    def MgrView(self):
-        # connect to database and check mgr username/pw
-        self.root.destroy()
+    def MgrView(self): # connect to database and check mgr username/pw
+
+        self.root.withdraw() # closes the login window
+        
         self.mgrview = Tk()
         self.mgrview.title("Choose Functionality")
 
@@ -71,7 +82,9 @@ class FancyHotels:
         Button(self.mgrview, text="View Revenue Reports").grid(row=4)
 
         
-    def CreateAccount(self):
+    def CreateAccount(self): # pulls up when user wants to create new account
+
+        self.root.withdraw() # closes the login window
         
         self.createacct = Tk()
         self.createacct.title("New User Registration")
@@ -93,27 +106,40 @@ class FancyHotels:
         Label(self.createacct, text=" ").grid(row=6, rowspan=2)
 
         Button(self.createacct, text="Submit",
-               command=self.Return2Login).grid(row=8, columnspan=2)
+               command=self.Return2Login).grid(row=8, columnspan=2) # user can now login
 
-    def Return2Login(self):
-        # enter SQL to insert to user account info
-        self.createacct.destroy()
-        self.Login()
+    def Return2Login(self): # helper function to take users back to login screen
+    
+        # enter SQL statement here to insert to user account info
+        
+        self.createacct.destroy() # removes create account window
+        self.Login(self.root) # recalls the login window
 
     def RoomSearch(self):
+        
+        self.userview.withdraw() # closes the user option's window
+        
         self.rmsrch = Tk()
         self.rmsrch.title("Search Rooms")
 
         RSvar = StringVar(self.rmsrch)
         RSvar.set("Atlanta")
 
-        Label(self.rmsrch, text="Location").grid(row=0, column=0)
+        Label(self.rmsrch, text="Location").grid(row=0, column=0, sticky=W)
         option = OptionMenu(self.rmsrch, RSvar, "Atlanta", "Charlotte",
                             "Savannah", "Orlando", "Miami")
         option.grid(row=0, column=1)
 
+        Label(self.rmsrch, text="Start Date").grid(row=1, column=0)
+        Entry(self.rmsrch).grid(row=1, column=1)
+
+        Label(self.rmsrch, text="End Date").grid(row=1, column=2)
+        Entry(self.rmsrch).grid(row=1, column=3)
+
+        Button(self.rmsrch, text="Search",
+               command=self.UserView).grid(row=3, column=3, sticky=E)
         
       
-root = Tk()
-prog = FancyHotels(root)
-root.mainloop()
+root = Tk() # creates the first window
+prog = FancyHotels(root) # starts the class of functions
+root.mainloop() # keeps program infinitely running until destroyed
