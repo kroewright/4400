@@ -1,5 +1,6 @@
 from tkinter import *
 import pymysql # need to install this module in computer, let me know if you need help installing it - Zu
+# http://www.cc.gatech.edu/classes/AY2014/cs2316_fall/presentations/pymysql3-Mac-instrutions.pdf <- TO INSTALL PYMYSQL
 
 # Label, Entry, Button, OptionMenu are just widgets for the GUIs
 # idk why you have to use self.(variable name) in these functions, it's just how I learned it in CS2316
