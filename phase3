@@ -1,7 +1,7 @@
 from tkinter import *
-#import PyMySQL
+import pymysql # need to install this module in computer, let me know if you need help installing it - Zu
 
-# Label, Entry, Button, Optionmenu are just widgets for the GUIs
+# Label, Entry, Button, OptionMenu are just widgets for the GUIs
 # idk why you have to use self.(variable name) in these functions, it's just how I learned it in CS2316
 # also not sure why I'm using class, but thats what I learned in 2316 and that seems to be what everyone uses in python
 
