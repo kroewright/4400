@@ -147,19 +147,21 @@ class FancyHotels:
         Button(self.rmsrch, text="Search",
                command=self.paymentInfo).grid(row=3, column=3, sticky=E)
 
-    def reserveRoom(self):
+    def reserveRoom(self): 
+        # gonna write later to pull up all the room info
         pass
 
-    def confirmation(self):
+    def confirmation(self): # need to finish code to include way to get reservation ID
 
         self.conf = Tk()
         self.conf.title("Confirmation Screen")
 
         Label(self.conf, text="Your Reservation ID").grid(row=1, column=0)
         ce = Entry(self.conf).grid(row=2, column=1)
-
     
-    def paymentInfo(self):
+    # need to include a function that lets customers either pick a credit card, add a credit card, and delete a credit card
+    
+    def paymentInfo(self): 
 
         self.pay=Tk()
         self.pay.title("Payment Information")
@@ -194,14 +196,18 @@ class FancyHotels:
                command=self.deleteCard).grid(row=6, column= 3, columnspan=2, padx=1)
        
     def saveCard(self):
-        messagebox.showinfo("card saved", message="saved!")
-        self.pay.destroy()
+        messagebox.showinfo("card saved", message="saved!") # lets customer know card has been saved
+        self.pay.destroy() # then destroys the window
 
     def deleteCard(self):
-        messagebox.showinfo("card deleted", message="deleted!")
-        self.pay.destroy()
+        messagebox.showinfo("card deleted", message="deleted!") # lets customer know card deleted
+        self.pay.destroy() # then destroys window
         
-      
+        
+        
+        
+        
+# required to start application
 root = Tk() # creates the first window
 prog = FancyHotels(root) # starts the class of functions
 root.mainloop() # keeps program infinitely running until destroyed
