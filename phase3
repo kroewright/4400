@@ -1,6 +1,10 @@
 from tkinter import *
 #import PyMySQL
 
+# Label, Entry, Button, Optionmenu are just widgets for the GUIs
+# idk why you have to use self.(variable name) in these functions, it's just how I learned it in CS2316
+# also not sure why I'm using class, but thats what I learned in 2316 and that seems to be what everyone uses in python
+
 class FancyHotels:
     
     def __init__(self, win):
@@ -13,7 +17,7 @@ class FancyHotels:
         except:
             pass
         
-        self.root = win # idk what this is, just the convention i learned in CS 2316
+        self.root = win # idk what this is, just the convention i learned in CS 2316 with Summet
         self.root.title("Login")
         
         Label(self.root, text="Username").grid(row=1, column=0)
@@ -122,8 +126,8 @@ class FancyHotels:
         self.rmsrch = Tk()
         self.rmsrch.title("Search Rooms")
 
-        RSvar = StringVar(self.rmsrch)
-        RSvar.set("Atlanta")
+        RSvar = StringVar(self.rmsrch) # RSvar is local to this function, self.RSvar makes it global
+        RSvar.set("Atlanta") # automatically sets the RSvar equal to Atlanta for reference in other functions
 
         Label(self.rmsrch, text="Location").grid(row=0, column=0, sticky=W)
         option = OptionMenu(self.rmsrch, RSvar, "Atlanta", "Charlotte",
