@@ -19,6 +19,9 @@ class FancyHotels:
                                     # or trying to login again
         except:
             pass
+            
+        self.root = win
+        self.root.title("Login")
         
         Label(self.root, text="Username").grid(row=1, column=0)
         self.e1 = StringVar() # needed so that whatever goes into textbox can be retrieved
