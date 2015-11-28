@@ -2,6 +2,8 @@ from tkinter import *
 import pymysql # need to install this module in computer, let me know if you need help installing it - Zu
 # http://www.cc.gatech.edu/classes/AY2014/cs2316_fall/presentations/pymysql3-Mac-instrutions.pdf <- TO INSTALL PYMYSQL
 
+# yall gotta set up VPN to access teh database from home
+
 # Label, Entry, Button, OptionMenu are just widgets for the GUIs
 # idk why you have to use self.(variable name) in these functions, it's just how I learned it in CS2316
 # also not sure why I'm using class, but thats what I learned in 2316 and that seems to be what everyone uses in python
@@ -18,43 +20,43 @@ class FancyHotels:
         except:
             pass
         
-        self.root = win # idk what this is, just the convention i learned in CS 2316 with Summet
-        self.root.title("Login")
-        
         Label(self.root, text="Username").grid(row=1, column=0)
-        Entry(self.root).grid(row=1, column=1, columnspan=3)
+        self.e1 = StringVar() # needed so that whatever goes into textbox can be retrieved
+        Entry(self.root, textvariable=self.e1).grid(row=1, column=1, columnspan=3)
         
         Label(self.root, text="Password").grid(row=2, column=0)
-        Entry(self.root).grid(row=2, column=1, columnspan=3)
+        self.e2 = StringVar()
+        Entry(self.root, textvariable=self.e2).grid(row=2, column=1, columnspan=3)
         
-        Button(self.root, text="Login", command=self.UserView).grid(row=3,
-                                                                 columnspan=4)
-
-        Label(self.root, text=" ").grid(row=4, column=0, rowspan=2)
-        
-        Button(self.root, text="Create New User Account",
-               command=self.CreateAccount).grid(row=7, columnspan=4)
+        Button(self.root, text="Login", command=self.CheckLogin).grid(row=3,columnspan=4)
+        Label(self.root, text=" ").grid(row=4, column=0, rowspan=2) #space filler
+        Button(self.root, text="Create New User Account", command=self.CreateAccount).grid(row=7, columnspan=4)
 
     #connects to network
     def Connect(self): # connects to database network
         try: # need to check this
-            self.db=pymysql.connect(host="academic-mysql.cc.gatech.edu",
-                                    db="cs4400_Group_16", user="cs4400_Group_16",
-                                    passwd="cq35Y7W9")
+            self.db=pymysql.connect(host="academic-mysql.cc.gatech.edu", db="cs4400_Group_16", user="cs4400_Group_16", passwd="cq35Y7W9")
+            print("DB connected")
             return self.db
             
         except: # bad internet connection, the login should be correct though
             messagebox.showinfo("Error!", "Check your internet connection")
+            print("DB not connected")
 
     def CheckLogin(self):
-        # connect to database and check username/pw
+
+        self.Connect()
+        c=self.db.cursor()
         
+        username = self.e1.get() # retrieves username
+        password = self.e2.get() # retrieves password
+
         # if user username/pw match -> self.UserView()
-        
+        # if username
         # if mgr username/pw match -> self.MgrView()
-        
-        # no match -> self.Login(self.root)
-        pass
+        # no match -> self.Login()
+            
+        print(username, password)
   
     def UserView(self): # connect to database and check username/pw
 
@@ -63,7 +65,7 @@ class FancyHotels:
         self.userview = Tk()
         self.userview.title("Choose Functionality")
         
-        Label(self.userview, text="Welcome Malvika").grid(row=0,sticky=W)
+        Label(self.userview, text="Welcome {}".format(self.e1.get())).grid(row=0,sticky=W)
         Label(self.userview, text=" ").grid(row=1)
         
         Button(self.userview, text="Make a New Reservation", command=self.RoomSearch).grid(row=2)
@@ -79,7 +81,7 @@ class FancyHotels:
         self.mgrview = Tk()
         self.mgrview.title("Choose Functionality")
 
-        Label(self.mgrview, text="Welcome Malvika").grid(row=0,sticky=W)
+        Label(self.mgrview, text="Welcome {}".format(self.e1.get())).grid(row=0,sticky=W)
         Label(self.mgrview, text=" ").grid(row=1)
         
         Button(self.mgrview, text="View Reservation Reports").grid(row=2)
@@ -110,19 +112,17 @@ class FancyHotels:
 
         Label(self.createacct, text=" ").grid(row=6, rowspan=2)
 
-        Button(self.createacct, text="Submit",
-               command=self.Return2Login).grid(row=8, columnspan=2) # user can now login
+        Button(self.createacct, text="Submit", command=self.Create2Login).grid(row=8, columnspan=2)
 
-    def Return2Login(self): # helper function to take users back to login screen
-    
-        # enter SQL statement here to insert to user account info
-
-        try:
-            self.createacct.destroy() # removes create account window
-        except:
-            pass
+    def Create2Login(self): # goes from New User Registration to Login window
         
-        self.Login(self.root) # recalls the login window
+        ##### enter SQL statement here to insert to user account info
+        
+        # self.createacct.destroy() # removes New User Registration window
+
+        # self.Login(self.root) # recalls the login window
+
+        pass
 
     def RoomSearch(self):
         
@@ -130,13 +130,25 @@ class FancyHotels:
         
         self.rmsrch = Tk()
         self.rmsrch.title("Search Rooms")
+        
+        # https://www.reddit.com/r/learnpython/comments/2wn1w6/how_to_create_a_drop_down_list_using_tkinter/
+        self.cities = [ 
+            
+            "Atlanta",
+            "Charlotte",
+            "Savannah",
+            "Orlando",
+            "Miami"
 
-        RSvar = StringVar(self.rmsrch)
-        RSvar.set("Atlanta")
+            ]
+            
+        # we have to use lists again when customer needs to delete credit card
+
+        self.o1 = StringVar(self.rmsrch)
+        self.o1.set(self.cities[0])
 
         Label(self.rmsrch, text="Location").grid(row=0, column=0, sticky=W)
-        option = OptionMenu(self.rmsrch, RSvar, "Atlanta", "Charlotte",
-                            "Savannah", "Orlando", "Miami")
+        option = OptionMenu(self.rmsrch, self.o1, *self.cities) # *self.cities adds the list to the drop down
         option.grid(row=0, column=1)
 
         Label(self.rmsrch, text="Start Date").grid(row=1, column=0)
@@ -145,11 +157,12 @@ class FancyHotels:
         Label(self.rmsrch, text="End Date").grid(row=1, column=2)
         Entry(self.rmsrch).grid(row=1, column=3)
 
-        Button(self.rmsrch, text="Search",
-               command=self.paymentInfo).grid(row=3, column=3, sticky=E)
+        Button(self.rmsrch, text="Search", command=self.paymentInfo).grid(row=3, column=3, sticky=E)
 
     def reserveRoom(self): 
-        # gonna write later to pull up all the room info
+    
+        # WE NEED TO WRITE DIS
+        
         pass
 
     def confirmation(self): # need to finish code to include way to get reservation ID
@@ -160,7 +173,7 @@ class FancyHotels:
         Label(self.conf, text="Your Reservation ID").grid(row=1, column=0)
         ce = Entry(self.conf).grid(row=2, column=1)
     
-    # need to include a function that lets customers either pick a credit card, add a credit card, and delete a credit card
+    #### need to include a function that lets customers either pick a credit card, add a credit card, and delete a credit card
     
     def paymentInfo(self): 
 
@@ -187,14 +200,20 @@ class FancyHotels:
         Label(self.pay, text = "Delete Card").grid(row=0, column = 3,
                                                    columnspan=2, padx=1)
         Label(self.pay, text="Card Number").grid(row=1, column = 3, padx=20)
-        cardVar = StringVar(self.pay)
-        cardVar.set("8219")
-        card = OptionMenu(self.pay, cardVar, "Atlanta", "Charlotte",
-                            "Savannah", "Orlando", "Miami")
+        
+        self.cards = []
+        
+        # NEED TO WRITE FOR LOOP THAT GETS ALL THE CREDIT CARDS THAT A USER HAS IN THE DATABASE
+        # AND ADD IT TO self.cards
+        
+        cardVar = StringVar(self.pay) 
+        cardVar.set("8219") # temporary
+        
+        card = OptionMenu(self.pay, cardVar, "Atlanta", "Charlotte", "Savannah", "Orlando", "Miami") # temporary
+        # need to change the card menu: http://effbot.org/tkinterbook/optionmenu.htm
         card.grid(row=1, column=4)
 
-        Button(self.pay, text= "Delete",
-               command=self.deleteCard).grid(row=6, column= 3, columnspan=2, padx=1)
+        Button(self.pay, text= "Delete", command=self.deleteCard).grid(row=6, column= 3, columnspan=2, padx=1)
        
     def saveCard(self):
         messagebox.showinfo("card saved", message="saved!") # lets customer know card has been saved
