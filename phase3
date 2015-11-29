@@ -54,6 +54,9 @@ class FancyHotels:
         username = self.e1.get() # retrieves username
         password = self.e2.get() # retrieves password
 
+        SELECT C_Username FROM CUSTOMER WHERE (C_Username='[C_Username]' AND Password='[password]')
+        SELECT M_Username FROM MANAGER WHERE (M_Username='[M_Username]' AND Password='[password]')
+
         # if user username/pw match -> self.UserView()
         # if username
         # if mgr username/pw match -> self.MgrView()
@@ -117,10 +120,15 @@ class FancyHotels:
 
         Button(self.createacct, text="Submit", command=self.Create2Login).grid(row=8, columnspan=2)
 
+        SELECT C_Username FROM CUSTOMER WHERE C_Username=’[Username]’
+        INSERT INTO CUSTOMER(Username, Password, Email) VALUES(‘c_' + '[C_Username]', '[Password]’, '[Email]')
+
+
     def Create2Login(self): # goes from New User Registration to Login window
         
         ##### enter SQL statement here to insert to user account info
-        
+        SELECT C_Username FROM CUSTOMER WHERE (C_Username='[C_Username]' AND Password='[password]')
+
         # self.createacct.destroy() # removes New User Registration window
 
         # self.Login(self.root) # recalls the login window
@@ -200,12 +208,19 @@ class FancyHotels:
         Button(self.pay, text= "Save",
                command=self.saveCard).grid(row=6, columnspan=2)
 
+        INSERT INTO Payment_Information(`NameOnCard`, `CardNum`,  `ExpDate`, `CVV`, `C_Username`) VALUES (’[NameOnCard]’, '[CardNum]', '[ExpDate]',  '[CVV]', '[C_Username]')
+
         Label(self.pay, text = "Delete Card").grid(row=0, column = 3,
                                                    columnspan=2, padx=1)
+
+        DELETE FROM Payment_Information WHERE `CardNum` = ‘[CardNum]’
+
         Label(self.pay, text="Card Number").grid(row=1, column = 3, padx=20)
         
         self.cards = []
-        
+
+        SELECT * FROM CardNum WHERE `C_Username` = ‘[C_Username]’
+
         # NEED TO WRITE FOR LOOP THAT GETS ALL THE CREDIT CARDS THAT A USER HAS IN THE DATABASE
         # AND ADD IT TO self.cards
         
