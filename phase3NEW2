@@ -165,6 +165,7 @@ class FancyHotels:
         print(self.o1.get())
 
         #### SQL STATEMENT
+        # sql = "SELECT C_Username, StartDate, EndDate, Cost, FinalCost, CardNum FROM ROOMS WHERE Location = '{}'".format(self.o1.get())
         cursor = self.db.cursor()
 
         #### NEED TO FILTER THIS SQL STATEMENT DOWN BY DATES
@@ -234,19 +235,23 @@ class FancyHotels:
                command=self.saveCard).grid(row=6, columnspan=2)
 
         # INSERT INTO Payment_Information(`NameOnCard`, `CardNum`,  `ExpDate`, `CVV`, `C_Username`) VALUES (’[NameOnCard]’, '[CardNum]', '[ExpDate]',  '[CVV]', '[C_Username]')
-
+        sql = "INSERT INTO PAYMENT_INFORMATION(NameOnCard, CardNum, ExpDate, CVV, C_Username)
+                VALUES (NameOnCard='{}', CardNum='{}', ExpDate='{}', CVV='{}', C_Username='{}'".format(Name on Card, Card Number, Expiration Date, CVV)
+                # grabs C_Username right away orrr ??
         Label(self.pay, text = "Delete Card").grid(row=0, column = 3,
                                                    columnspan=2, padx=1)
 
         # DELETE FROM Payment_Information WHERE `CardNum` = ‘[CardNum]’
-
+        sql = "DELETE FROM PAYMENT_INFORMATION WHERE CardNum='{}'".format(CardNum)
         Label(self.pay, text="Card Number").grid(row=1, column = 3, padx=20)
         
         self.cards = []
 
         # SELECT * FROM CardNum WHERE `C_Username` = ‘[C_Username]’
+        sql = SELECT * FROM PAYMENT_INFORMATION WHERE C_Username='{}'".format(C_Username)
 
         # NEED TO WRITE FOR LOOP THAT GETS ALL THE CREDIT CARDS THAT A USER HAS IN THE DATABASE
+        # Mica's comment: if it's grabbing C_Username then it should show all of the cards; should be linked to their name/account automatically
         # AND ADD IT TO self.cards
         
         cardVar = StringVar(self.pay) 
@@ -284,11 +289,19 @@ class FancyHotels:
     def ReservationReports(self):
         pass
 
+        sql = "SELECT Location, RoomNo FROM RESERVED_ROOMS WHERE Location = '{}'".format(self.o1.get())
+
     def PopularRooms(self):
         pass
 
+        sql = "SELECT Location, RoomNo FROM RESERVED_ROOMS WHERE "
+        # a count must be done on category I'm guessing --- how many are we considering popular for a category?
+
     def RevenueReports(self):
         pass
+
+        sql = "SELECT FinalCost From RESERVATIONS WHERE "
+        # a count must be done on all final costs in the database
 
         
     def CreateAccount(self): # pulls up when user wants to create new account
@@ -317,7 +330,10 @@ class FancyHotels:
         Button(self.createacct, text="Submit", command=self.Create2Login).grid(row=8, columnspan=2)
 
         # SELECT C_Username FROM CUSTOMER WHERE C_Username=’[Username]’
-        # INSERT INTO CUSTOMER(Username, Password, Email) VALUES(‘c_' + '[C_Username]', '[Password]’, '[Email]')
+        sql = "SELECT C_Username from CUSTOMER WHERE C_Username='{}'".format(self.o1.get())
+        # INSERT INTO CUSTOMER(Username, Password, Email) VALUES(‘C' + '[C_Username]', '[Password]’, '[Email]')
+        sql = "INSERT INTO CUSTOMER(Username, Password, Email)
+                VALUES(C_Username=‘C' + '{}', Password='{}’, Email='{}')".format(C_Username, Password, Email)
 
 
     def Create2Login(self): # goes from New User Registration to Login window
