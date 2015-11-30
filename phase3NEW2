@@ -1,0 +1,337 @@
+from tkinter import *
+import datetime
+import pymysql 
+
+# need to install this module in computer, let me know if you need help installing it - Zu
+# http://www.cc.gatech.edu/classes/AY2014/cs2316_fall/presentations/pymysql3-Mac-instrutions.pdf <- TO INSTALL PYMYSQL
+
+# yall gotta set up VPN to access the database from home
+
+# Label, Entry, Button, OptionMenu are just widgets for the GUIs
+# idk why you have to use self.(variable name) in these functions, it's just how I learned it in CS2316
+# also not sure why I'm using class, but thats what I learned in 2316 and that seems to be what everyone uses in python
+
+class FancyHotels:
+    
+    def __init__(self, win):
+        self.Login(win) # pulls up the login window
+
+    def Login(self, win):
+        try:
+            self.root.deiconify()   # redraws login screen after creating account
+                                    # or trying to login again
+        except:
+            pass
+            
+        self.root = win
+        self.root.title("Login")
+        
+        Label(self.root, text="Username").grid(row=1, column=0)
+        self.e1 = StringVar() # needed so that whatever goes into textbox can be retrieved
+        self.e1.set("Cadele")
+        Entry(self.root, textvariable=self.e1).grid(row=1, column=1, columnspan=3)
+        
+        Label(self.root, text="Password").grid(row=2, column=0)
+        self.e2 = StringVar()
+        self.e2.set("hello")
+        Entry(self.root, textvariable=self.e2).grid(row=2, column=1, columnspan=3)
+        
+        Button(self.root, text="Login", command=self.CheckLogin).grid(row=3,columnspan=4)
+        Label(self.root, text=" ").grid(row=4, column=0, rowspan=2) #space filler
+        Button(self.root, text="Create New User Account", command=self.CreateAccount).grid(row=7, columnspan=4)
+
+    #connects to network
+    def Connect(self): # connects to database network
+        
+        try: # need to check this
+            self.db=pymysql.connect(host="academic-mysql.cc.gatech.edu", db="cs4400_Group_16", user="cs4400_Group_16", passwd="cq35Y7W9")
+            print("DB connected")
+            return self.db
+            
+        except: # bad internet connection, the login should be correct though
+            messagebox.showinfo("Error!", "Check your internet connection")
+            print("DB not connected")
+
+    def CheckLogin(self):
+
+        self.Connect()
+        
+        username = self.e1.get() # retrieves username from GUI
+        password = self.e2.get() # retrieves password from GUI
+
+        print("username:", username, "password:", password)
+
+        if username[0] == "C":
+            cursor = self.db.cursor()
+            sql = "SELECT C_Username, Password FROM CUSTOMER WHERE (C_Username='{}' AND Password='{}')".format(username, password)
+            cursor.execute(sql)
+
+            for record in cursor:
+                print("items in cursor:", cursor.rowcount)
+                
+                if cursor.rowcount != 0:
+                    self.UserView()
+
+                else:
+                    messagebox.showinfo("Login Error!", message="Incorret login. Try again")
+                   
+        elif username[0] == "M":
+            cursor = self.db.cursor()
+            sql = "SELECT M_Username, Password FROM MANAGERS WHERE (M_Username='{}' AND Password='{}')".format(username, password)
+            cursor.execute(sql)
+
+            for record in cursor:
+                print("items in cursor:", cursor.rowcount)
+                
+                if cursor.rowcount != 0:
+                    self.MgrView()
+
+                else:
+                    messagebox.showinfo("Login Error!", message="Incorret login. Try again")
+            
+        
+        else:
+            messagebox.showinfo("Login Error!", message="Invalid username Try again!")
+            
+  
+    def UserView(self): # connect to database and check username/pw
+
+        self.root.withdraw() # closes the login window
+        
+        self.userview = Tk()
+        self.userview.title("Choose Functionality")
+        
+        Label(self.userview, text="Welcome {}".format(self.e1.get())).grid(row=0,sticky=W)
+        Label(self.userview, text=" ").grid(row=1)
+        
+        Button(self.userview, text="Make a New Reservation", command=self.RoomSearch).grid(row=2)
+        Button(self.userview, text="Update Your Reservation").grid(row=3)
+        Button(self.userview, text="Cancel a Reservation").grid(row=4)
+        Button(self.userview, text="Provide feedback").grid(row=5)
+        Button(self.userview, text="View feedback").grid(row=6)
+
+    def RoomSearch(self):
+        
+        self.userview.withdraw() # closes the user option's window
+        
+        self.rmsrch = Toplevel()
+        self.rmsrch.title("Search Rooms")
+        
+        # https://www.reddit.com/r/learnpython/comments/2wn1w6/how_to_create_a_drop_down_list_using_tkinter/
+        self.cities = ["Atlanta", "Charlotte", "Savannah", "Orlando", "Miami"]
+            
+        # we have to use lists again when customer needs to delete credit card
+
+        self.o1 = StringVar(self.rmsrch)
+        self.o1.set(self.cities[0])
+
+        Label(self.rmsrch, text="Location").grid(row=0, column=0, sticky=W)
+        self.option = OptionMenu(self.rmsrch, self.o1, *self.cities) # *self.cities adds the list to the drop down
+        self.option.grid(row=0, column=1)
+
+        Label(self.rmsrch, text="Start Date").grid(row=1, column=0)
+        self.Sdate = StringVar()
+        
+        now = datetime.datetime.now()
+        today = "{}/{}/{}".format(now.month, now.day, now.year)
+        print("{}/{}/{}".format(now.month, now.day, now.year))
+
+        
+        self.Sdate.set(today)
+        self.startDate = Entry(self.rmsrch, textvariable=self.Sdate)
+        self.startDate.grid(row=1, column=1)
+
+##        self.startDate.insert(0, today)
+##        self.startDate.config(state="readonly")
+##        self.startDate.grid(row=1, column=1)
+
+        Label(self.rmsrch, text="End Date").grid(row=1, column=2)
+        self.Edate = StringVar()
+        self.Edate.set("12/04/2015") # just to make shit easy for now
+        end = Entry(self.rmsrch, textvariable = self.Edate).grid(row=1, column=3)
+
+        Button(self.rmsrch, text="Search",
+               command=self.reserveRoom).grid(row=3, column=3, sticky=E)
+
+    def reserveRoom(self):
+
+        print(self.Sdate.get())
+
+        self.rmsrch.withdraw()
+
+        self.reserve = Tk()
+        self.reserve.title("Make a Reservation")
+
+        print(self.o1.get())
+
+        #### SQL STATEMENT
+        cursor = self.db.cursor()
+
+        #### NEED TO FILTER THIS SQL STATEMENT DOWN BY DATES
+        sql = "SELECT RoomNo, Category, Capacity, Cost, ExtraCost FROM ROOMS WHERE Location = '{}'".format(self.o1.get())
+        cursor.execute(sql)
+
+        Label(self.reserve, text="Room Number", background="green").grid(row=0, column=0)
+        Label(self.reserve, text="Room Category", background="yellow").grid(row=0, column=1)
+        Label(self.reserve, text="# Persons Allowed", background="green").grid(row=0, column=2)
+        Label(self.reserve, text="Cost per Day", background="yellow").grid(row=0, column=3)
+        Label(self.reserve, text="Cost of Extra Bed Per Day", background="green").grid(row=0, column=4)
+        Label(self.reserve, text="Select Room", background="yellow").grid(row=0, column=5)
+
+        counter = 1
+        for x in cursor:
+            # print("x is:", x)
+            # print("counter is:", counter)
+            # print(" ")
+            Label(self.reserve, text=x[0]).grid(row=counter, column=0)
+            Label(self.reserve, text=x[1]).grid(row=counter, column=1)
+            Label(self.reserve, text=x[2]).grid(row=counter, column=2)
+            Label(self.reserve, text=x[3]).grid(row=counter, column=3)
+            Label(self.reserve, text=x[4]).grid(row=counter, column=4)
+            Label(self.reserve, text="Yes").grid(row=counter, column=5)
+            counter = counter + 1
+        
+            
+        Button(self.reserve, text="Check Details", command=self.checkDetails).grid(row=counter, column=5)
+        
+        
+        pass
+
+    def checkDetails(self):
+        pass
+
+
+    def confirmation(self): # need to finish code to include way to get reservation ID
+
+        self.conf = Tk()
+        self.conf.title("Confirmation Screen")
+
+        Label(self.conf, text="Your Reservation ID").grid(row=1, column=0)
+        ce = Entry(self.conf).grid(row=2, column=1)
+    
+    #### need to include a function that lets customers either pick a credit card, add a credit card, and delete a credit card
+    
+    def paymentInfo(self): 
+
+        self.pay=Tk()
+        self.pay.title("Payment Information")
+
+        Label(self.pay, text="Add Card").grid(row=0, columnspan = 2)
+
+        Label(self.pay, text="Name on Card").grid(row=1, column = 0)
+        Entry(self.pay).grid(row=1, column=1)
+
+        Label(self.pay, text="Card Number").grid(row=2, column = 0)
+        Entry(self.pay).grid(row=2, column=1)
+
+        Label(self.pay, text="Expiration Date").grid(row=3, column = 0)
+        Entry(self.pay).grid(row=3, column=1)
+
+        Label(self.pay, text="CVV").grid(row=4, column = 0)
+        Entry(self.pay).grid(row=4, column=1)
+
+        Button(self.pay, text= "Save",
+               command=self.saveCard).grid(row=6, columnspan=2)
+
+        # INSERT INTO Payment_Information(`NameOnCard`, `CardNum`,  `ExpDate`, `CVV`, `C_Username`) VALUES (’[NameOnCard]’, '[CardNum]', '[ExpDate]',  '[CVV]', '[C_Username]')
+
+        Label(self.pay, text = "Delete Card").grid(row=0, column = 3,
+                                                   columnspan=2, padx=1)
+
+        # DELETE FROM Payment_Information WHERE `CardNum` = ‘[CardNum]’
+
+        Label(self.pay, text="Card Number").grid(row=1, column = 3, padx=20)
+        
+        self.cards = []
+
+        # SELECT * FROM CardNum WHERE `C_Username` = ‘[C_Username]’
+
+        # NEED TO WRITE FOR LOOP THAT GETS ALL THE CREDIT CARDS THAT A USER HAS IN THE DATABASE
+        # AND ADD IT TO self.cards
+        
+        cardVar = StringVar(self.pay) 
+        cardVar.set("8219") # temporary
+        
+        card = OptionMenu(self.pay, cardVar, "Atlanta", "Charlotte", "Savannah", "Orlando", "Miami") # temporary
+        # need to change the card menu: http://effbot.org/tkinterbook/optionmenu.htm
+        card.grid(row=1, column=4)
+
+        Button(self.pay, text= "Delete", command=self.deleteCard).grid(row=6, column= 3, columnspan=2, padx=1)
+       
+    def saveCard(self):
+        messagebox.showinfo("card saved", message="saved!") # lets customer know card has been saved
+        self.pay.destroy() # then destroys the window
+
+    def deleteCard(self):
+        messagebox.showinfo("card deleted", message="deleted!") # lets customer know card deleted
+        self.pay.destroy() # then destroys window
+
+        
+    def MgrView(self): # connect to database and check mgr username/pw
+
+        self.root.withdraw() # closes the login window
+        
+        self.mgrview = Tk()
+        self.mgrview.title("Choose Functionality")
+
+        Label(self.mgrview, text="Welcome {}".format(self.e1.get())).grid(row=0,sticky=W)
+        Label(self.mgrview, text=" ").grid(row=1)
+        
+        Button(self.mgrview, text="View Reservation Reports", command = self.ReservationReports).grid(row=2)
+        Button(self.mgrview, text="View Popular Room Category Reports", command = self.PopularRooms).grid(row=3)
+        Button(self.mgrview, text="View Revenue Reports", command = self.RevenueReports).grid(row=4)
+
+    def ReservationReports(self):
+        pass
+
+    def PopularRooms(self):
+        pass
+
+    def RevenueReports(self):
+        pass
+
+        
+    def CreateAccount(self): # pulls up when user wants to create new account
+
+        self.root.withdraw() # closes the login window
+        
+        self.createacct = Tk()
+        self.createacct.title("New User Registration")
+
+        Label(self.createacct, text=" ").grid(row=0, rowspan=2)
+
+        Label(self.createacct, text="Username").grid(row=2, sticky=E)
+        Entry(self.createacct).grid(row=2, column=1)
+
+        Label(self.createacct, text="Password").grid(row=3, sticky=E)
+        Entry(self.createacct).grid(row=3, column=1)
+
+        Label(self.createacct, text="Confirm Password").grid(row=4, sticky=E)
+        Entry(self.createacct).grid(row=4, column=1)
+
+        Label(self.createacct, text="Email").grid(row=5, sticky=E)
+        Entry(self.createacct).grid(row=5, column=1)
+
+        Label(self.createacct, text=" ").grid(row=6, rowspan=2)
+
+        Button(self.createacct, text="Submit", command=self.Create2Login).grid(row=8, columnspan=2)
+
+        # SELECT C_Username FROM CUSTOMER WHERE C_Username=’[Username]’
+        # INSERT INTO CUSTOMER(Username, Password, Email) VALUES(‘c_' + '[C_Username]', '[Password]’, '[Email]')
+
+
+    def Create2Login(self): # goes from New User Registration to Login window
+        
+        ##### enter SQL statement here to insert to user account info
+        # SELECT C_Username FROM CUSTOMER WHERE (C_Username='[C_Username]' AND Password='[password]')
+
+        # self.createacct.destroy() # removes New User Registration window
+
+        # self.Login(self.root) # recalls the login window
+
+        pass
+                
+# required to start application
+root = Tk() # creates the first window
+prog = FancyHotels(root) # starts the class of functions
+root.mainloop() # keeps program infinitely running until destroyed
