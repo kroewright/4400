@@ -165,7 +165,8 @@ class FancyHotels:
         print(self.o1.get())
 
         #### SQL STATEMENT
-        # sql = "SELECT C_Username, StartDate, EndDate, Cost, FinalCost, CardNum FROM ROOMS WHERE Location = '{}'".format(self.o1.get())
+        # sql = "SELECT C_Username, StartDate, EndDate, Cost, FinalCost, CardNum FROM RESERVATIONS WHERE Location = '{}'".format(self.o1.get())
+        # moved further down - line 213
         cursor = self.db.cursor()
 
         #### NEED TO FILTER THIS SQL STATEMENT DOWN BY DATES
@@ -209,6 +210,12 @@ class FancyHotels:
 
         Label(self.conf, text="Your Reservation ID").grid(row=1, column=0)
         ce = Entry(self.conf).grid(row=2, column=1)
+        sql = "INSERT INTO RESERVATIONS(C_Username, StartDate, EndDate, Cost, FinalCost, CardNum)
+                VALUES C_Username='{}', StartDate='{}', EndDate='{}', Cost='{}', FinalCost='{}',
+                CardNum='{}'".format(startDate, Edate, Cost per day)
+        # Confused about this one HIGH KEY - Mica
+        #ResID should increment by 1 for each insertion if I understand this correctly - Mica
+
     
     #### need to include a function that lets customers either pick a credit card, add a credit card, and delete a credit card
     
