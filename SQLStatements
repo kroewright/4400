@@ -81,9 +81,9 @@ AND Location=Location GROUP BY Location
 SELECT COUNT(Category) FROM (RESERVATIONS NATURAL JOIN ROOMS)
 
 #Gives incorrect count of rooms but it gives something so work with me
-SELECT Location, Category, SUM(Category) FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS)
+SELECT Location, Category, SUM(Category) FROM (ROOMS NATURAL JOIN RESERVATIONS)
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
-AND Location='Atlanta' GROUP BY Category
+AND Location='Charlotte' GROUP BY Category
 
 SELECT RoomNo, Location, Category, Capacity, Cost, ExtraCost 
 FROM ROOMS WHERE Location = 'Atlanta' 
