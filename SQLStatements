@@ -18,25 +18,27 @@ SELECT C_Username, Password FROM CUSTOMER WHERE C_Username=C_Username AND Passwo
 #Returns all managers
 SELECT M_Username, Password FROM MANAGERS WHERE M_Username=M_Username AND Password=Password
 
-
-
 #Search Available Rooms
 SELECT RoomNo, Location, Category, Capacity, Cost, ExtraCost 
-FROM ROOMS WHERE Location = 'Atlanta' 
+FROM ROOMS WHERE Location = '[Location]' 
 AND ROOMS.RoomNo NOT in ( 
 	SELECT RoomNo
 	FROM RESERVED_ROOMS
 	WHERE RESERVED_ROOMS.ResID in 
 		(SELECT ResID 
-		FROM RESERVATIONS WHERE (StartDate <= '2015-09-17' AND EndDate >= '2015-09-17')
-		OR (StartDate <= '2015-09-21' AND EndDate >= '2015-09-21') AND Cancelled = 0)
-	AND Location = 'Atlanta'
+		FROM RESERVATIONS WHERE (StartDate <= '[StartDate]' AND EndDate >= '[EndDate]')
+		OR (StartDate <= '[StartDate]' AND EndDate >= '[EndDate]') AND Cancelled = 0)
+	AND Location = '[Location]'
 )
 
 #Payment Info
 #Add payment info for a user
 INSERT INTO PAYMENT_INFORMATION(NameOnCard, CardNum, ExpDate, CVV, C_Username)
 VALUES ('[NameOnCard]', '[CardNum]', '[ExpDate]',  '[CVV]', '[C_Username]')
+
+#Make Reservation
+INSERT INTO RESERVATIONS(ResID, C_Username, StartDate, EndDate, FinalCost, CardNum, Cancelled)
+VALUES ('[ResID]', '[C_Username]', '[StartDate]', '[EndDate]', '[FinalCost]', '[CardNum]', '0')
 
 #Delete payment info by credit card number
 DELETE FROM PAYMENT_INFORMATION WHERE CardNum='[CardNum]'
@@ -45,6 +47,15 @@ DELETE FROM PAYMENT_INFORMATION WHERE CardNum='[CardNum]'
 SELECT * FROM PAYMENT_INFORMATION WHERE C_Username=C_Username
 SELECT FROM PAYMENT_INFORMATION WHERE NameOnCard = '[NameOnCard]'
 
+#Display Reservation based on ResID
+SELECT RoomNo, Location, Category, Capacity, Cost, ExtraCost
+FROM ROOMS
+AND SELECT RoomNo, ResID FROM RESERVATIONS
+WHERE RESERVED_ROOMS.RoomNo = ROOMS.RoomNo AND ResID='[ResID]'
+AND SELECT ResID, StartDate, EndDate FROM RESERVATIONS
+WHERE ResID='ResID' AND StartDate='[StartDate]' AND EndDate='[EndDate]'
+
+######################
 #Update Reservation
 #First pull users' reservation
 SELECT ResID, StartDate, EndDate FROM RESERVATIONS WHERE ResID = '[ResID]'
@@ -53,6 +64,7 @@ SELECT ResID, StartDate, EndDate FROM RESERVATIONS WHERE ResID = '[ResID]'
 UPDATE RESERVATIONS
 SET StartDate='[newStart]',EndDate='[newEnd]'
 WHERE StartDate='[oldStart]' AND EndDate='[oldEnd]' AND ResID='[ResID]' 
+#########################
 
 #Cancel Reservation
 UPDATE RESERVATIONS
@@ -60,13 +72,13 @@ SET ResID=ResID
 WHERE Cancelled = '1'
 
 #View Hotel Reviews
-SELECT *
+SELECT Rating, Comment
 FROM HOTEL_REVIEWS
+WHERE Location='[Location]'
 
 #Give Review
 INSERT INTO HOTEL_REVIEWS(Location, ReviewID, Rating, C_Username, Comment)
 VALUES('[Location]', '[ReviewID]', '[Rating]', '[C_Username]', '[Comment]')
-
 
 #Reservation Report for August and September
 SELECT MONTHNAME(StartDate), Location, COUNT(ResID) FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
@@ -74,13 +86,15 @@ WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2
 OR ((StartDate BETWEEN '2015-09-01' AND '2015-09-30') AND (EndDate BETWEEN '2015-09-01' AND '2015-09-30'))
 AND Location=Location GROUP BY MONTHNAME(StartDate), Location
 
-#Popular Room Report
+#############################
+#Popular Room Report for August
 SELECT MONTHNAME(StartDate), Location FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
 AND Location=Location GROUP BY Location
 SELECT COUNT(Category) FROM (RESERVATIONS NATURAL JOIN ROOMS)
 
 #Gives incorrect count of rooms but it gives something so work with me
+<<<<<<< Updated upstream
 SELECT Location, Category, SUM(Category) FROM (ROOMS NATURAL JOIN RESERVATIONS)
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
 AND Location='Charlotte' GROUP BY Category
@@ -98,6 +112,17 @@ AND ROOMS.RoomNo NOT in (
 )
 
 #Revenue Report
+=======
+SELECT ResID, Location, RoomNo
+FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS)
+WHERE (
+(StartDate BETWEEN '2015-08-01' AND '2015-08-31')
+AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31')
+AND Location = 'Orlando')
+#####################################
+
+#Revenue Report for August and September
+>>>>>>> Stashed changes
 SELECT MONTHNAME(StartDate), Location, SUM(FinalCost) AS 'Total Revenue' FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS)
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31')) 
 OR ((StartDate BETWEEN '2015-09-01' AND '2015-09-30') AND (EndDate BETWEEN '2015-09-01' AND '2015-09-30'))
