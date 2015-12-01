@@ -47,6 +47,7 @@ DELETE FROM PAYMENT_INFORMATION WHERE CardNum='[CardNum]'
 SELECT * FROM PAYMENT_INFORMATION WHERE C_Username=C_Username
 SELECT FROM PAYMENT_INFORMATION WHERE NameOnCard = '[NameOnCard]'
 
+#############################
 #Display Reservation based on ResID
 SELECT RoomNo, Location, Category, Capacity, Cost, ExtraCost
 FROM ROOMS
@@ -54,8 +55,9 @@ AND SELECT RoomNo, ResID FROM RESERVATIONS
 WHERE RESERVED_ROOMS.RoomNo = ROOMS.RoomNo AND ResID='[ResID]'
 AND SELECT ResID, StartDate, EndDate FROM RESERVATIONS
 WHERE ResID='ResID' AND StartDate='[StartDate]' AND EndDate='[EndDate]'
+############################
 
-######################
+
 #Update Reservation
 #First pull users' reservation
 SELECT ResID, StartDate, EndDate FROM RESERVATIONS WHERE ResID = '[ResID]'
@@ -64,7 +66,7 @@ SELECT ResID, StartDate, EndDate FROM RESERVATIONS WHERE ResID = '[ResID]'
 UPDATE RESERVATIONS
 SET StartDate='[newStart]',EndDate='[newEnd]'
 WHERE StartDate='[oldStart]' AND EndDate='[oldEnd]' AND ResID='[ResID]' 
-#########################
+
 
 #Cancel Reservation
 UPDATE RESERVATIONS
