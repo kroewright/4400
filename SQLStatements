@@ -1,0 +1,106 @@
+#Phase 3: SQL Statements
+
+#Login
+#To determine a correct login (should return a username if correct):
+SELECT C_Username FROM CUSTOMER WHERE (C_Username='[username]' AND Password='[password]')
+SELECT M_Username FROM MANAGERS WHERE (M_Username='[username]' AND Password='[password]')
+
+#New User 
+#To determine if that username/email has already been taken:
+SELECT C_Username, Email, Password FROM CUSTOMER WHERE C_Username='[username]' AND Email='[email]' AND Password='[password]'
+
+#If that username is free, then:
+INSERT INTO CUSTOMER(C_Username, Password, Email) VALUES('[username]', '[password]', '[email]')
+
+#Returns all customers
+SELECT C_Username, Password FROM CUSTOMER WHERE C_Username=C_Username AND Password=Password
+
+#Returns all managers
+SELECT M_Username, Password FROM MANAGERS WHERE M_Username=M_Username AND Password=Password
+
+
+
+#Search Available Rooms
+SELECT RoomNo, Location, Category, Capacity, Cost, ExtraCost 
+FROM ROOMS WHERE Location = 'Atlanta' 
+AND ROOMS.RoomNo NOT in ( 
+	SELECT RoomNo
+	FROM RESERVED_ROOMS
+	WHERE RESERVED_ROOMS.ResID in 
+		(SELECT ResID 
+		FROM RESERVATIONS WHERE (StartDate <= '2015-09-17' AND EndDate >= '2015-09-17')
+		OR (StartDate <= '2015-09-21' AND EndDate >= '2015-09-21') AND Cancelled = 0)
+	AND Location = 'Atlanta'
+)
+
+#Payment Info
+#Add payment info for a user
+INSERT INTO PAYMENT_INFORMATION(NameOnCard, CardNum, ExpDate, CVV, C_Username)
+VALUES ('[NameOnCard]', '[CardNum]', '[ExpDate]',  '[CVV]', '[C_Username]')
+
+#Delete payment info by credit card number
+DELETE FROM PAYMENT_INFORMATION WHERE CardNum='[CardNum]'
+
+#Display payment info for specific user
+SELECT * FROM PAYMENT_INFORMATION WHERE C_Username=C_Username
+SELECT FROM PAYMENT_INFORMATION WHERE NameOnCard = '[NameOnCard]'
+
+#Update Reservation
+#First pull users' reservation
+SELECT ResID, StartDate, EndDate FROM RESERVATIONS WHERE ResID = '[ResID]'
+
+#Then, Change Dates for Reservation
+UPDATE RESERVATIONS
+SET StartDate='[newStart]',EndDate='[newEnd]'
+WHERE StartDate='[oldStart]' AND EndDate='[oldEnd]' AND ResID='[ResID]' 
+
+#Cancel Reservation
+UPDATE RESERVATIONS
+SET ResID=ResID
+WHERE Cancelled = '1'
+
+#View Hotel Reviews
+SELECT *
+FROM HOTEL_REVIEWS
+
+#Give Review
+INSERT INTO HOTEL_REVIEWS(Location, ReviewID, Rating, C_Username, Comment)
+VALUES('[Location]', '[ReviewID]', '[Rating]', '[C_Username]', '[Comment]')
+
+
+#Reservation Report for August and September
+SELECT MONTHNAME(StartDate), Location, COUNT(ResID) FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
+WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31')) 
+OR ((StartDate BETWEEN '2015-09-01' AND '2015-09-30') AND (EndDate BETWEEN '2015-09-01' AND '2015-09-30'))
+AND Location=Location GROUP BY MONTHNAME(StartDate), Location
+
+#Popular Room Report
+SELECT MONTHNAME(StartDate), Location FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
+WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
+AND Location=Location GROUP BY Location
+SELECT COUNT(Category) FROM (RESERVATIONS NATURAL JOIN ROOMS)
+
+
+SELECT RoomNo, Location, Category, Capacity, Cost, ExtraCost 
+FROM ROOMS WHERE Location = 'Atlanta' 
+AND ROOMS.RoomNo NOT in ( 
+	SELECT RoomNo
+	FROM RESERVED_ROOMS
+	WHERE RESERVED_ROOMS.ResID in 
+		(SELECT ResID 
+		FROM RESERVATIONS WHERE (StartDate <= '2015-09-17' AND EndDate >= '2015-09-17')
+		OR (StartDate <= '2015-09-21' AND EndDate >= '2015-09-21'))
+	AND Location = 'Atlanta'
+)
+
+#Revenue Report
+SELECT MONTHNAME(StartDate), Location, SUM(FinalCost) AS 'Total Revenue' FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS)
+WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31')) 
+OR ((StartDate BETWEEN '2015-09-01' AND '2015-09-30') AND (EndDate BETWEEN '2015-09-01' AND '2015-09-30'))
+AND Location=Location GROUP BY MONTHNAME(StartDate), Location
+
+
+
+
+
+
