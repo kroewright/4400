@@ -123,39 +123,12 @@ WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2
 OR ((StartDate BETWEEN '2015-09-01' AND '2015-09-30') AND (EndDate BETWEEN '2015-09-01' AND '2015-09-30'))
 AND Location=Location GROUP BY MONTHNAME(StartDate), Location
 
-#############################
 #Popular Room Report for August
-SELECT MONTHNAME(StartDate) AS 'Month', Location FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
-WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
-AND Location=Location GROUP BY Location
-AND RESERVED_ROOMS.ResID in (
-	SELECT ResID 
-	FROM ROOMS
-	WHERE ROOMS.RoomNo in (
-		SELECT Category
-		FROM ROOMS)
-	)
-
-
- 
-
-#Gives incorrect count of rooms but it gives something so work with me
-<<<<<<< Updated upstream
-SELECT Location, Category, SUM(Category) FROM (ROOMS NATURAL JOIN RESERVATIONS)
-WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
-AND Location='Charlotte' GROUP BY Category
-
-
-
-#Revenue Report
-=======
-SELECT ResID, Location, RoomNo
-FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS)
-WHERE (
-(StartDate BETWEEN '2015-08-01' AND '2015-08-31')
-AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31')
-AND Location = 'Orlando')
-#####################################
+SELECT MONTHNAME(StartDate) AS 'Month', Category, Location, Count(Category)
+	FROM RESERVATIONS NATURAL JOIN ROOMS
+	WHERE StartDate='2015-08-02' AND EndDate='2015-08-05'
+	GROUP BY Location, MONTHNAME(StartDate), Category
+	ORDER BY Location, COUNT(RoomNo)
 
 #Revenue Report for August and September
 SELECT MONTHNAME(StartDate) AS 'Month', Location, SUM(FinalCost) AS 'Total Revenue' 
