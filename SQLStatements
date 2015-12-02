@@ -74,10 +74,31 @@ UPDATE RESERVATIONS
 SET StartDate='[newStart]',EndDate='[newEnd]'
 WHERE StartDate='[oldStart]' AND EndDate='[oldEnd]' AND ResID='[ResID]' 
 
-#What is this?.....
-SELECT RoomNo, Category, Capacity, Cost, ExtraCost, StartDate, EndDate, FinalCost 
-FROM (ROOMS OUTER JOIN RESERVATIONS)
-WHERE ResID = ResID
+#Cancel Reservation View - StartDate, EndDate
+SELECT StartDate, EndDate 
+FROM RESERVATIONS
+WHERE ResID = 'ResID'
+
+#Cancel Reservation View - RoomNo, Category, Capacity, Cost & ExtraCost
+SELECT RoomNo, Category, Capacity, Cost, ExtraCost
+FROM ROOMS
+WHERE ROOMS.RoomNo in (
+SELECT RoomNo
+FROM RESERVED_ROOMS
+WHERE RESERVED_ROOMS.ResID in (
+SELECT ResID
+FROM RESERVATIONS WHERE (
+StartDate = '[StartDate]' AND EndDate = '[EndDate]') ) )
+
+#Cancel Reservation View - ExtraCost Boolean
+SELECT ExtraCost
+FROM RESERVED_ROOMS
+WHERE ResID =  'ResID'
+
+#Cancel Reservation View - FinalCost
+SELECT FinalCost
+FROM RESERVATIONS
+WHERE ResID = 'ResID'
 
 #Cancel Reservation
 UPDATE RESERVATIONS
@@ -111,8 +132,6 @@ SELECT COUNT(Category) FROM (RESERVATIONS NATURAL JOIN ROOMS)
 SELECT Location, Category, SUM(Category) FROM (ROOMS NATURAL JOIN RESERVATIONS)
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
 AND Location='Charlotte' GROUP BY Category
-
-
 
 #Revenue Report
 =======
