@@ -28,7 +28,7 @@ AND ROOMS.RoomNo NOT in (
 		(SELECT ResID 
 		FROM RESERVATIONS WHERE (StartDate <= '[StartDate]' AND EndDate >= '[EndDate]')
 		OR (StartDate <= '[StartDate]' AND EndDate >= '[EndDate]') AND Cancelled = 0)
-	AND Location = '[Location]'
+	AND Location = '[Location]' AND RoomNo = '[RoomNo]'
 )
 
 #Payment Info
@@ -61,7 +61,20 @@ WHERE ResID='[ResID]'
 #Then, Change Dates for Reservation
 UPDATE RESERVATIONS
 SET StartDate='[newStart]',EndDate='[newEnd]'
-WHERE StartDate='[oldStart]' AND EndDate='[oldEnd]' AND ResID='[ResID]' 
+WHERE StartDate='[oldStart]' AND EndDate='[oldEnd]' AND ResID='[ResID]'
+
+#Check availability on room for new dates
+SELECT RoomNo, Location, Category, Capacity, Cost, ExtraCost 
+FROM ROOMS WHERE Location = '[Location]' 
+AND ROOMS.RoomNo NOT in ( 
+	SELECT RoomNo
+	FROM RESERVED_ROOMS
+	WHERE RESERVED_ROOMS.ResID in 
+		(SELECT ResID 
+		FROM RESERVATIONS WHERE (StartDate <= '[StartDate]' AND EndDate >= '[EndDate]')
+		OR (StartDate <= '[StartDate]' AND EndDate >= '[EndDate]') AND Cancelled = 0)
+	AND Location = '[Location]'
+) AND RoomNo='[RoomNo]'
 
 #Display Reservation based on ResID
 #Cancel Reservation View - StartDate, EndDate
