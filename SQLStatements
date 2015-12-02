@@ -60,13 +60,23 @@ WHERE ResID='ResID' AND StartDate='[StartDate]' AND EndDate='[EndDate]'
 
 #Update Reservation
 #First pull users' reservation
-SELECT ResID, StartDate, EndDate FROM RESERVATIONS WHERE ResID = '[ResID]'
+SELECT ResID, StartDate, EndDate 
+FROM RESERVATIONS 
+WHERE ResID = '[ResID]'
+
+#Get City
+SELECT Location 
+FROM RESERVED_ROOMS
+WHERE ResID='[ResID]'
 
 #Then, Change Dates for Reservation
 UPDATE RESERVATIONS
 SET StartDate='[newStart]',EndDate='[newEnd]'
 WHERE StartDate='[oldStart]' AND EndDate='[oldEnd]' AND ResID='[ResID]' 
 
+SELECT RoomNo, Category, Capacity, Cost, ExtraCost, StartDate, EndDate, FinalCost 
+FROM (ROOMS OUTER JOIN RESERVATIONS)
+WHERE ResID = ResID
 
 #Cancel Reservation
 UPDATE RESERVATIONS
