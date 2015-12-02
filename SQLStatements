@@ -74,6 +74,7 @@ UPDATE RESERVATIONS
 SET StartDate='[newStart]',EndDate='[newEnd]'
 WHERE StartDate='[oldStart]' AND EndDate='[oldEnd]' AND ResID='[ResID]' 
 
+#What is this?.....
 SELECT RoomNo, Category, Capacity, Cost, ExtraCost, StartDate, EndDate, FinalCost 
 FROM (ROOMS OUTER JOIN RESERVATIONS)
 WHERE ResID = ResID
@@ -93,7 +94,7 @@ INSERT INTO HOTEL_REVIEWS(Location, ReviewID, Rating, C_Username, Comment)
 VALUES('[Location]', '[ReviewID]', '[Rating]', '[C_Username]', '[Comment]')
 
 #Reservation Report for August and September
-SELECT MONTHNAME(StartDate), Location, COUNT(ResID) FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
+SELECT MONTHNAME(StartDate), Location, COUNT(ResID) AS 'Total Reservations' FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31')) 
 OR ((StartDate BETWEEN '2015-09-01' AND '2015-09-30') AND (EndDate BETWEEN '2015-09-01' AND '2015-09-30'))
 AND Location=Location GROUP BY MONTHNAME(StartDate), Location
@@ -111,17 +112,7 @@ SELECT Location, Category, SUM(Category) FROM (ROOMS NATURAL JOIN RESERVATIONS)
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
 AND Location='Charlotte' GROUP BY Category
 
-SELECT RoomNo, Location, Category, Capacity, Cost, ExtraCost 
-FROM ROOMS WHERE Location = 'Atlanta' 
-AND ROOMS.RoomNo NOT in ( 
-	SELECT RoomNo
-	FROM RESERVED_ROOMS
-	WHERE RESERVED_ROOMS.ResID in 
-		(SELECT ResID 
-		FROM RESERVATIONS WHERE (StartDate <= '2015-09-17' AND EndDate >= '2015-09-17')
-		OR (StartDate <= '2015-09-21' AND EndDate >= '2015-09-21'))
-	AND Location = 'Atlanta'
-)
+
 
 #Revenue Report
 =======
