@@ -47,22 +47,11 @@ DELETE FROM PAYMENT_INFORMATION WHERE CardNum='[CardNum]'
 SELECT * FROM PAYMENT_INFORMATION WHERE C_Username=C_Username
 SELECT FROM PAYMENT_INFORMATION WHERE NameOnCard = '[NameOnCard]'
 
-#############################
-#Display Reservation based on ResID
-SELECT RoomNo, Location, Category, Capacity, Cost, ExtraCost
-FROM ROOMS
-AND SELECT RoomNo, ResID FROM RESERVATIONS
-WHERE RESERVED_ROOMS.RoomNo = ROOMS.RoomNo AND ResID='[ResID]'
-AND SELECT ResID, StartDate, EndDate FROM RESERVATIONS
-WHERE ResID='ResID' AND StartDate='[StartDate]' AND EndDate='[EndDate]'
-############################
-
-
 #Update Reservation
 #First pull users' reservation
-SELECT ResID, StartDate, EndDate 
+SELECT ResID, StartDate, EndDate, C_Username 
 FROM RESERVATIONS 
-WHERE ResID = '[ResID]'
+WHERE ResID = '[ResID]' AND C_Username='[C_Username]'
 
 #Get City
 SELECT Location 
@@ -74,6 +63,7 @@ UPDATE RESERVATIONS
 SET StartDate='[newStart]',EndDate='[newEnd]'
 WHERE StartDate='[oldStart]' AND EndDate='[oldEnd]' AND ResID='[ResID]' 
 
+#Display Reservation based on ResID
 #Cancel Reservation View - StartDate, EndDate
 SELECT StartDate, EndDate 
 FROM RESERVATIONS
@@ -99,7 +89,6 @@ WHERE ResID =  'ResID'
 SELECT FinalCost
 FROM RESERVATIONS
 WHERE ResID = 'ResID'
-
 #Cancel Reservation
 UPDATE RESERVATIONS
 SET ResID=ResID
@@ -115,23 +104,36 @@ INSERT INTO HOTEL_REVIEWS(Location, ReviewID, Rating, C_Username, Comment)
 VALUES('[Location]', '[ReviewID]', '[Rating]', '[C_Username]', '[Comment]')
 
 #Reservation Report for August and September
-SELECT MONTHNAME(StartDate), Location, COUNT(ResID) AS 'Total Reservations' FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
+SELECT MONTHNAME(StartDate) AS 'Month', Location, COUNT(ResID) AS 'Total Reservations' FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31')) 
 OR ((StartDate BETWEEN '2015-09-01' AND '2015-09-30') AND (EndDate BETWEEN '2015-09-01' AND '2015-09-30'))
 AND Location=Location GROUP BY MONTHNAME(StartDate), Location
 
 #############################
 #Popular Room Report for August
-SELECT MONTHNAME(StartDate), Location FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
+SELECT MONTHNAME(StartDate) AS 'Month', Location FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
-AND Location=Location GROUP BY Location
-SELECT COUNT(Category) FROM (RESERVATIONS NATURAL JOIN ROOMS)
+AND Location=Location GROUP BY Location....
+
+
+AND RESERVED_ROOMS.RoomNo in (
+	SELECT RoomNo 
+	FROM ROOMS
+	WHERE ROOMS.RoomNo in (
+		SELECT Category
+		FROM ROOMS)
+	)
+
+
+ 
 
 #Gives incorrect count of rooms but it gives something so work with me
 <<<<<<< Updated upstream
 SELECT Location, Category, SUM(Category) FROM (ROOMS NATURAL JOIN RESERVATIONS)
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
 AND Location='Charlotte' GROUP BY Category
+
+
 
 #Revenue Report
 =======
@@ -144,11 +146,11 @@ AND Location = 'Orlando')
 #####################################
 
 #Revenue Report for August and September
->>>>>>> Stashed changes
-SELECT MONTHNAME(StartDate), Location, SUM(FinalCost) AS 'Total Revenue' FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS)
-WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31')) 
-OR ((StartDate BETWEEN '2015-09-01' AND '2015-09-30') AND (EndDate BETWEEN '2015-09-01' AND '2015-09-30'))
-AND Location=Location GROUP BY MONTHNAME(StartDate), Location
+SELECT MONTHNAME(StartDate) AS 'Month', Location, SUM(FinalCost) AS 'Total Revenue' 
+FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS)
+WHERE (Cancelled = '0' AND (StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31')) 
+OR ((StartDate BETWEEN '2015-09-01' AND '2015-09-30') AND (EndDate BETWEEN '2015-09-01' AND '2015-09-30')) AND Location=Location 
+GROUP BY MONTHNAME(StartDate), Location
 
 
 
