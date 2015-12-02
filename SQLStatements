@@ -102,10 +102,11 @@ WHERE ResID =  'ResID'
 SELECT FinalCost
 FROM RESERVATIONS
 WHERE ResID = 'ResID'
+
 #Cancel Reservation
 UPDATE RESERVATIONS
-SET ResID=ResID
-WHERE Cancelled = '1'
+SET Cancelled = '1'
+WHERE ResID=ResID
 
 #View Hotel Reviews
 SELECT Rating, Comment
@@ -126,11 +127,9 @@ AND Location=Location GROUP BY MONTHNAME(StartDate), Location
 #Popular Room Report for August
 SELECT MONTHNAME(StartDate) AS 'Month', Location FROM (RESERVATIONS NATURAL JOIN RESERVED_ROOMS) 
 WHERE ((StartDate BETWEEN '2015-08-01' AND '2015-08-31') AND (EndDate BETWEEN '2015-08-01' AND '2015-08-31'))
-AND Location=Location GROUP BY Location....
-
-
-AND RESERVED_ROOMS.RoomNo in (
-	SELECT RoomNo 
+AND Location=Location GROUP BY Location
+AND RESERVED_ROOMS.ResID in (
+	SELECT ResID 
 	FROM ROOMS
 	WHERE ROOMS.RoomNo in (
 		SELECT Category
